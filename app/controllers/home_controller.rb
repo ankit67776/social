@@ -1,4 +1,5 @@
 class HomeController < ApplicationController
-  def index
+  def hello
+    render plain: "Hello #{current_user.email}!"
   end
 end
