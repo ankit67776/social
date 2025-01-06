@@ -81,9 +81,9 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: social_development
-    #username: social 
-    #password: <%= ENV["SOCIAL_DATABASE_PASSWORD"] %>    
+    database: social_production
+    username: social 
+    password: <%= ENV["SOCIAL_DATABASE_PASSWORD"] %>    
   cache:
     <<: *primary_production
     database: social_production_cache
