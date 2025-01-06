@@ -36,3 +36,10 @@ cable:
   database: social_cable
   username: cable_user
   password: <%= ENV['CABLE_DATABASE_PASSWORD'] %>
+  
+queue:
+  <<: *default
+  database: social_queue
+  username: queue_user
+  password: <%= ENV['QUEUE_DATABASE_PASSWORD'] %>
+
