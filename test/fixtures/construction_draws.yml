@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  loan: one
+  customer: one
+  details: MyText
+
+two:
+  loan: two
+  customer: two
+  details: MyText

@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { registrations: "users/registrations" }
+  devise_for :users, controllers: {
+  sessions: "users/sessions",
+  registrations: "users/registrations" }
 
   # Conditional root paths based on user authentication state
   devise_scope :user do
@@ -10,6 +12,8 @@ Rails.application.routes.draw do
     unauthenticated do
       root to: "devise/registrations#new", as: :unauthenticated_root
     end
+
+    get "users/sign_out" => "devise/sessions#destroy"
   end
 
   # Hello world page
@@ -20,4 +24,7 @@ Rails.application.routes.draw do
 
   # Health check route
   get "up" => "rails/health#show", as: :rails_health_check
+
+  # route for displaying customers and their draws
+  resources :customers, only: [ :index, :show ]
 end

@@ -1,0 +1,2 @@
+class PaymentSchedulesController < ApplicationController
+end

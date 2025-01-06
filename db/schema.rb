@@ -10,9 +10,77 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_31_153816) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_04_003412) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "construction_draws", force: :cascade do |t|
+    t.bigint "loan_id", null: false
+    t.bigint "customer_id", null: false
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_construction_draws_on_customer_id"
+    t.index ["loan_id"], name: "index_construction_draws_on_loan_id"
+  end
+
+  create_table "construction_progresses", force: :cascade do |t|
+    t.bigint "property_id", null: false
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["property_id"], name: "index_construction_progresses_on_property_id"
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.string "name"
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "loan_applications", force: :cascade do |t|
+    t.bigint "customer_id", null: false
+    t.date "creation_date"
+    t.text "application_details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_loan_applications_on_customer_id"
+  end
+
+  create_table "loans", force: :cascade do |t|
+    t.bigint "customer_id", null: false
+    t.bigint "loan_application_id", null: false
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_loans_on_customer_id"
+    t.index ["loan_application_id"], name: "index_loans_on_loan_application_id"
+  end
+
+  create_table "payment_schedules", force: :cascade do |t|
+    t.bigint "loan_id", null: false
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["loan_id"], name: "index_payment_schedules_on_loan_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.bigint "loan_id", null: false
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["loan_id"], name: "index_payments_on_loan_id"
+  end
+
+  create_table "properties", force: :cascade do |t|
+    t.bigint "loan_id", null: false
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["loan_id"], name: "index_properties_on_loan_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -28,4 +96,14 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_31_153816) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "construction_draws", "customers"
+  add_foreign_key "construction_draws", "loans"
+  add_foreign_key "construction_progresses", "properties"
+  add_foreign_key "loan_applications", "customers"
+  add_foreign_key "loans", "customers"
+  add_foreign_key "loans", "loan_applications"
+  add_foreign_key "payment_schedules", "loans"
+  add_foreign_key "payments", "loans"
+  add_foreign_key "properties", "loans"
 end
