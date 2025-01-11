@@ -8,24 +8,77 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-customer = Customer.find(1)
+require "faker"
 
-if customer
-  # Create a loan application for this customer
-  loan_application = LoanApplication.find_or_create_by(
-    customer: customer,
-    creation_date: Date.today,
-    application_details: "Loan application for property purchase"
+# customers
+10.times do
+  Customer.create!(
+    name: Faker::Name.name,
+    details: Faker::Lorem.sentence
   )
-
-  # Create multiple loans for the customer
-  Loan.create!(
-    customer: customer,
-    loan_application: loan_application,
-    details: "Loan approved for $200,000"
-  )
-
-  puts "Loans created successfully for #{customer.name}"
-else
-  puts "Customer not found"
 end
+
+# seed loan applications
+Customer.all.each do |customer|
+  2.times do
+    loan_application= LoanApplication.create!(
+      customer: customer,
+      creation_date: Faker::Date.backward(days: 365),
+      application_details: Faker::Lorem.paragraph
+    )
+
+    # seed loans for each loan application
+    3.times do
+      Loan.create!(
+        customer: customer,
+        loan_application: loan_application,
+        details: "Loan approved for #{Faker::Number.decimal(l_digits: 5, r_digits: 2)} USD"
+      )
+    end
+  end
+end
+
+# properties for each loan
+Loan.all.each do |loan|
+  Property.create!(
+    loan: loan,
+    details: Faker::Lorem.sentence
+  )
+end
+
+# construction draws for each loan
+Loan.all.each do |loan|
+  ConstructionDraw.create!(
+    loan: loan,
+    customer: loan.customer,
+    details: Faker::Lorem.paragraph
+  )
+end
+
+# construction progress for each property
+Property.all.each do |property|
+  ConstructionProgress.create!(
+    property: property,
+    details: Faker::Lorem.paragraph
+  )
+end
+
+# seed payments for each loan
+Loan.all.each do |loan|
+  5.times do
+    Payment.create!(
+      loan: loan,
+      details: "Payment of  #{Faker::Number.decimal(l_digits: 4, r_digits: 2)} USD"
+    )
+  end
+end
+
+# payment schedules for each loan
+Loan.all.each do |loan|
+  PaymentSchedule.create!(
+    loan: loan,
+    details: Faker::Lorem.sentence
+  )
+end
+
+puts "Data created successfully"
