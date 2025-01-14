@@ -1,8 +1,8 @@
 class Loan < ApplicationRecord
   belongs_to :customer
   belongs_to :loan_application
-  has_one :property
-  has_many :payments
-  has_one :payment_schedules
-  has_many :construction_draws
+
+  validates :account, presence: true
+  validates :categories, presence: true
+  validates :orig_bal, numericality: true
 end
