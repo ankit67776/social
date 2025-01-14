@@ -27,4 +27,6 @@ Rails.application.routes.draw do
 
   # route for displaying customers and their draws
   resources :customers, only: [ :index, :show ]
+
+  get "loan_portfolio", to: "loans#loan_portfolio"
 end

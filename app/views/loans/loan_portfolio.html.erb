@@ -1,0 +1,17 @@
+<h1 class="text-3xl font-bold mb-6 text-center">Loan Portfolio Insights</h1>
+
+<div class="space-y-4">
+  <p class="text-lg"><span class="font-semibold">Total Loans:</span> <%= @insights[:total_loans] %></p>
+  <p class="text-lg"><span class="font-semibold">Total Loan Amount:</span> $<%= @insights[:total_loan_amount] %></p>
+  <p class="text-lg"><span class="font-semibold">Average Loan Amount:</span> $<%= @insights[:average_loan_amount] %></p>
+  <p class="text-lg"><span class="font-semibold">Largest Loan:</span> $<%= @insights[:largest_loan] %></p>
+  <p class="text-lg"><span class="font-semibold">Smallest Loan:</span> $<%= @insights[:smallest_loan] %></p>
+</div>
+
+<h2 class="text-2xl font-semibold mt-8 mb-4">Status Distribution</h2>
+<ul class="list-disc pl-5 space-y-2">
+  <% @insights[:status_distribution].each do |status, count| %>
+    <li class="text-lg"><%= status.present? ? status : "Unknown" %>: <%= count %></li>
+  <% end %>
+</ul>
+
