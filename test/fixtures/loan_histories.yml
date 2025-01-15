@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  loan: one
+  loan_balance: 9.99
+  notes: MyText
+  paid_to: 2025-01-15 00:44:12
+  source_app: MyString
+  total_amount: 9.99
+
+two:
+  loan: two
+  loan_balance: 9.99
+  notes: MyText
+  paid_to: 2025-01-15 00:44:12
+  source_app: MyString
+  total_amount: 9.99

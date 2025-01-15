@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_14_081353) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_15_011245) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -48,6 +48,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_14_081353) do
     t.index ["customer_id"], name: "index_loan_applications_on_customer_id"
   end
 
+  create_table "loan_histories", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "loan_records", force: :cascade do |t|
     t.string "account"
     t.string "categories"
@@ -58,8 +63,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_14_081353) do
   end
 
   create_table "loans", force: :cascade do |t|
-    t.bigint "customer_id", null: false
-    t.bigint "loan_application_id", null: false
+    t.bigint "customer_id"
+    t.bigint "loan_application_id"
     t.text "details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

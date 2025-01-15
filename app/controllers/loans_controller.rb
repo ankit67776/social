@@ -4,23 +4,48 @@ class LoansController < ApplicationController
 
   BASE_URL = "https://absws.com/TmoAPI/v1/LSS.svc"
 
-  def fetch_and_store_loans
-    response = fetch_api_data("#{BASE_URL}/GetLoans")
+  def fetch_and_store_loans_with_history
+    loans_response = fetch_api_data("#{BASE_URL}/GetLoans")
 
-    if response.is_a?(Hash) && response["Data"].is_a?(Array)
-      response["Data"].each do |loan_data|
-        Loan.find_or_initialize_by(account: loan_data["Account"]).update(
-          categories: loan_data["Categories"],
-          orig_bal: loan_data.dig("Terms", "OrigBal"),
-          data: loan_data # Store the entire API response in JSON format
-        )
-      end
-
-      render json: { message: "Loans successfully stored in the database" }, status: :ok
-    else
-      Rails.logger.error("Unexpected API response format: #{response}")
-      render json: { error: "Invalid Response" }, status: :bad_request
+    if loans_response.nil? || !loans_response["Data"].is_a?(Array)
+      Rails.logger.error("Failed to fetch loans or invalid response format: #{loans_response}")
+      render json: { error: "Failed to fetch loans or invalid response format" }, status: :bad_request
+      return
     end
+
+    successful_accounts = []
+    failed_accounts = []
+
+    loans_response["Data"].each do |loan_data|
+      begin
+        account = loan_data["Account"]
+        loan_history_response = fetch_api_data("#{BASE_URL}/GetLoanHistory/#{account}")
+
+        if loan_history_response.nil? || !loan_history_response["Data"].is_a?(Array)
+          Rails.logger.error("Failed to fetch valid loan history for account #{account}")
+          failed_accounts << account
+          next
+        end
+
+        Loan.find_or_initialize_by(account: account).tap do |loan|
+          # Only save loan data and loan history
+          loan.loan_history = loan_history_response
+          loan.data = loan_data
+          loan.save!
+        end
+
+        successful_accounts << account
+      rescue => e
+        Rails.logger.error("Error processing loan for account #{loan_data['Account']}: #{e.message}")
+        failed_accounts << account
+      end
+    end
+
+    render json: {
+      message: "Loans processed",
+      successful_accounts: successful_accounts,
+      failed_accounts: failed_accounts
+    }, status: :ok
   end
 
   private
@@ -28,22 +53,30 @@ class LoansController < ApplicationController
   def fetch_api_data(url)
     uri = URI(url)
     request = Net::HTTP::Get.new(uri)
-    request["Token"] = "ABS"
-    request["Database"] = "World Mortgage Company"
+    request["Token"] = ENV.fetch("API_TOKEN", "ABS")
+    request["Database"] = ENV.fetch("API_DATABASE", "World Mortgage Company")
 
-    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-      http.request(request)
+    begin
+      response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
+        http.request(request)
+      end
+    rescue StandardError => e
+      Rails.logger.error("Failed to fetch data from #{url}: #{e.message}")
+      return nil
     end
+
     Rails.logger.info("Response from #{url}: #{response.body}")
+
     if response.is_a?(Net::HTTPSuccess)
-      JSON.parse(response.body) rescue nil
+      begin
+        JSON.parse(response.body)
+      rescue JSON::ParserError => e
+        Rails.logger.error("Failed to parse JSON response: #{e.message}")
+        nil
+      end
     else
       Rails.logger.error("Failed to fetch data from #{url}: #{response.code} - #{response.message}")
       nil
     end
-  end
-
-  def render_error(message)
-    render json: { error: message }, status: :bad_request
   end
 end

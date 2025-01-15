@@ -8,77 +8,42 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-require "faker"
+# Sample data for Loans and LoanHistories
+loans_data = [
+  { account: "1000", categories: "Personal Loan", orig_bal: 200000, data: { "key" => "value" } },
+  { account: "1001", categories: "Car Loan", orig_bal: 15000, data: { "key" => "value" } },
+  { account: "1002", categories: "Mortgage", orig_bal: 300000, data: { "key" => "value" } },
+  { account: "1003", categories: "Personal Loan", orig_bal: 25000, data: { "key" => "value" } },
+  { account: "1004", categories: "Car Loan", orig_bal: 18000, data: { "key" => "value" } },
+  { account: "1005", categories: "Home Equity", orig_bal: 50000, data: { "key" => "value" } },
+  { account: "1006", categories: "Mortgage", orig_bal: 220000, data: { "key" => "value" } },
+  { account: "1007", categories: "Student Loan", orig_bal: 8000, data: { "key" => "value" } },
+  { account: "1008", categories: "Personal Loan", orig_bal: 15000, data: { "key" => "value" } },
+  { account: "1009", categories: "Car Loan", orig_bal: 25000, data: { "key" => "value" } }
+]
 
-# customers
-10.times do
-  Customer.create!(
-    name: Faker::Name.name,
-    details: Faker::Lorem.sentence
-  )
-end
+loans_data.each do |loan_data|
+  loan = Loan.find_or_initialize_by(account: loan_data[:account])
+  loan.update!(data: loan_data[:data], orig_bal: loan_data[:orig_bal], categories: loan_data[:categories])
 
-# seed loan applications
-Customer.all.each do |customer|
-  2.times do
-    loan_application= LoanApplication.create!(
-      customer: customer,
-      creation_date: Faker::Date.backward(days: 365),
-      application_details: Faker::Lorem.paragraph
-    )
+  # Generate LoanHistory data for each loan
+  loan_history_data = [
+    {
+      "loan_balance" => loan_data[:orig_bal],
+      "notes" => "Initial funding from loan #{loan_data[:account]}",
+      "paid_to" => "2/15/2010",
+      "source_app" => "TDS-FUNDING",
+      "total_amount" => -loan_data[:orig_bal]
+    }
+  ]
 
-    # seed loans for each loan application
-    3.times do
-      Loan.create!(
-        customer: customer,
-        loan_application: loan_application,
-        details: "Loan approved for #{Faker::Number.decimal(l_digits: 5, r_digits: 2)} USD"
-      )
-    end
-  end
-end
-
-# properties for each loan
-Loan.all.each do |loan|
-  Property.create!(
-    loan: loan,
-    details: Faker::Lorem.sentence
-  )
-end
-
-# construction draws for each loan
-Loan.all.each do |loan|
-  ConstructionDraw.create!(
-    loan: loan,
-    customer: loan.customer,
-    details: Faker::Lorem.paragraph
-  )
-end
-
-# construction progress for each property
-Property.all.each do |property|
-  ConstructionProgress.create!(
-    property: property,
-    details: Faker::Lorem.paragraph
-  )
-end
-
-# seed payments for each loan
-Loan.all.each do |loan|
-  5.times do
-    Payment.create!(
-      loan: loan,
-      details: "Payment of  #{Faker::Number.decimal(l_digits: 4, r_digits: 2)} USD"
+  loan_history_data.each do |history|
+    loan.loan_histories.create!(
+      loan_balance: history["loan_balance"],
+      notes: history["notes"],
+      paid_to: history["paid_to"],
+      source_app: history["source_app"],
+      total_amount: history["total_amount"]
     )
   end
 end
-
-# payment schedules for each loan
-Loan.all.each do |loan|
-  PaymentSchedule.create!(
-    loan: loan,
-    details: Faker::Lorem.sentence
-  )
-end
-
-puts "Data created successfully"

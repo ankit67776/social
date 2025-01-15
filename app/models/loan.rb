@@ -1,8 +1,3 @@
 class Loan < ApplicationRecord
-  belongs_to :customer
-  belongs_to :loan_application
-
-  validates :account, presence: true
-  validates :categories, presence: true
-  validates :orig_bal, numericality: true
+  has_many :loan_histories, dependent: :destroy
 end
