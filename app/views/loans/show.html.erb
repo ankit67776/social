@@ -1,0 +1,97 @@
+<div class="container mx-auto p-8 bg-gray-50">
+  <h1 class="text-4xl font-extrabold mb-12 text-center text-indigo-900">Loan Details</h1>
+
+  <% parsed_data = @loan.data || {} %>
+
+  <!-- Loan Information Card -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+    <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
+      <h3 class="text-2xl font-semibold mb-4 text-gray-800">Loan Information</h3>
+      <div class="flex justify-between mb-3">
+        <p class="text-gray-600"><strong>Account Number:</strong> <%= @loan.account %></p>
+      </div>
+      <div class="flex justify-between mb-3">
+        <p class="text-gray-600"><strong>Loan Status:</strong> <%= parsed_data['ServiceStatus'] || 'N/A' %></p>
+      </div>
+      <div class="flex justify-between mb-3">
+        <p class="text-gray-600"><strong>Remaining Balance:</strong> <%= parsed_data.dig('Terms', 'RemainingBalance') || 'N/A' %></p>
+      </div>
+      <div class="flex justify-between mb-3">
+        <p class="text-gray-600"><strong>Next Due Date:</strong> <%= parsed_data.dig('Terms', 'NextDueDate') || 'N/A' %></p>
+      </div>
+    </div>
+
+    <!-- Borrower Information Card -->
+    <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
+      <h3 class="text-2xl font-semibold mb-4 text-gray-800">Borrower Information</h3>
+      <div class="mb-3">
+        <p class="text-gray-600"><strong>Name:</strong> <%= parsed_data.dig('PrimaryBorrower', 'FullName') || 'N/A' %></p>
+      </div>
+      <div class="mb-3">
+        <p class="text-gray-600"><strong>Email:</strong> <%= parsed_data.dig('PrimaryBorrower', 'EmailAddress') || 'N/A' %></p>
+      </div>
+      <div class="mb-3">
+        <p class="text-gray-600"><strong>Phone:</strong> <%= parsed_data.dig('PrimaryBorrower', 'PhoneCell') || 'N/A' %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Co-Borrowers Section -->
+  <% if parsed_data['CoBorrowers']&.any? %>
+    <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-12">
+      <h3 class="text-2xl font-semibold mb-4 text-gray-800">Co-Borrowers</h3>
+      <div class="space-y-4">
+        <% parsed_data['CoBorrowers'].each do |borrower| %>
+          <div class="flex justify-between mb-3">
+            <p class="text-gray-600"><strong>Name:</strong> <%= borrower['FullName'] || 'N/A' %></p>
+            <p class="text-gray-600"><strong>Relation:</strong> <%= borrower['Relation'] || 'N/A' %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Custom Fields Section -->
+  <% if parsed_data['CustomFields']&.any? %>
+    <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-12">
+      <h3 class="text-2xl font-semibold mb-4 text-gray-800">Custom Fields</h3>
+      <div class="space-y-3">
+        <% parsed_data['CustomFields'].each do |field| %>
+          <div class="flex justify-between mb-3">
+            <p class="text-gray-600"><strong><%= field['Name'] || 'N/A' %>:</strong> <%= field['Value'] || 'N/A' %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Loan Progress (Progress Bar) -->
+  <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mb-12">
+    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Loan Progress</h3>
+    <div class="relative">
+      <p class="text-gray-600 mb-3">Remaining Balance: <%= parsed_data.dig('Terms', 'RemainingBalance') || 'N/A' %></p>
+      
+      <% 
+  # Extract the 'RemainingBalance' and 'Value', and safely convert them to numeric values
+  remaining_balance = parsed_data.dig('Terms', 'RemainingBalance').to_s.delete('$,').to_f || 0 
+  total_amount = parsed_data.dig('PrimaryProperty', 'Value').to_s.delete('$,').to_f || 1 # Default to 1 to prevent division by zero
+  
+  # Calculate the progress percentage, ensuring it doesn't exceed 100%
+  progress_percentage = [(remaining_balance / total_amount) * 100, 100].min 
+%>
+
+      <!-- Progress Bar -->
+      <div class="h-2 bg-gray-200 rounded-full">
+        <div class="h-2 bg-green-500 rounded-full" style="width: <%= progress_percentage %>%"></div>
+      </div>
+      <div class="absolute top-0 left-1/2 transform -translate-x-1/2 text-gray-800 font-semibold">
+        <%= "#{progress_percentage.to_i}% Completed" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="mt-8 flex justify-center">
+    <%= link_to 'Back to List', loans_path, class: "bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-indigo-500 transition" %>
+  </div>
+</div>

@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_15_011245) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_19_001508) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "accounts", force: :cascade do |t|
+    t.string "account"
+    t.string "principal_balance"
+    t.string "interest_rate"
+    t.string "maturity_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "construction_draws", force: :cascade do |t|
     t.bigint "loan_id", null: false
@@ -63,17 +72,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_011245) do
   end
 
   create_table "loans", force: :cascade do |t|
-    t.bigint "customer_id"
-    t.bigint "loan_application_id"
-    t.text "details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "account"
-    t.string "categories"
-    t.decimal "orig_bal"
     t.jsonb "data"
-    t.index ["customer_id"], name: "index_loans_on_customer_id"
-    t.index ["loan_application_id"], name: "index_loans_on_loan_application_id"
+    t.index ["account"], name: "index_loans_on_account", unique: true
   end
 
   create_table "payment_schedules", force: :cascade do |t|
@@ -100,6 +103,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_011245) do
     t.index ["loan_id"], name: "index_properties_on_loan_id"
   end
 
+  create_table "samples", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.json "data"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -119,8 +130,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_011245) do
   add_foreign_key "construction_draws", "loans"
   add_foreign_key "construction_progresses", "properties"
   add_foreign_key "loan_applications", "customers"
-  add_foreign_key "loans", "customers"
-  add_foreign_key "loans", "loan_applications"
   add_foreign_key "payment_schedules", "loans"
   add_foreign_key "payments", "loans"
   add_foreign_key "properties", "loans"

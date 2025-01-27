@@ -30,5 +30,6 @@ Rails.application.routes.draw do
 
   # get "loan_portfolio", to: "loans#loan_portfolio"
 
+  resources :loans, only: [ :index, :show ]
   get "/fetch_loans", to: "loans#fetch_and_store_loans_with_history"
 end
