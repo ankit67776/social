@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_19_001508) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_27_234714) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,6 +46,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_19_001508) do
     t.text "details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "getbuilt_properties", force: :cascade do |t|
+    t.json "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "account"
+    t.index ["account"], name: "index_getbuilt_properties_on_account", unique: true
   end
 
   create_table "loan_applications", force: :cascade do |t|

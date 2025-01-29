@@ -68,3 +68,10 @@ gem "faker"
 gem "httparty"
 gem "pry"
 gem "nokogiri"
+gem "http"
+
+gem "chartkick", "~> 5.1"
+
+gem "sidekiq", "~> 7.3"
+
+gem "whenever", "~> 1.0"
