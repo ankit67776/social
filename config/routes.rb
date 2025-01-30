@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   # Conditional root paths based on user authentication state
   devise_scope :user do
     authenticated :user do
-      root to: redirect("/loans"), as: :authenticated_root
+      root to: redirect("loans"), as: :authenticated_root
     end
 
     unauthenticated do
@@ -17,8 +17,8 @@ Rails.application.routes.draw do
   end
 
   # Hello world page
-  get "hello", to: "home#hello", as: "hello"
-
+  get "hello", to: "home#hello"
+  get "loans", to: "properties#loans"
   # Login Route (overriding sessions#new)
   get "login", to: "devise/sessions#new", as: :login
 
@@ -34,6 +34,6 @@ Rails.application.routes.draw do
   get "/fetch_loans", to: "loans#fetch_and_store_loans_with_history"
 
   post "fetch_and_save", to: "api_responses#fetch_and_save"
-  get "properties/:id/loan_overview", to: "properties#loan_overview"
+  get "loans/:id/loan_overview", to: "properties#loan_overview"
   get "properties/:id/loan_analytics", to: "properties#loan_analytics"
 end

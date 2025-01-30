@@ -3,7 +3,7 @@ class Users::SessionsController < Devise::SessionsController
 
   # path after login
   def after_sign_in_path_for(resource)
-    hello_path # redirect to the /hello after login
+    loans_path # redirect to the /hello after login
   end
 
   # path after logout

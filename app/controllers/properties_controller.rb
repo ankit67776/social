@@ -22,4 +22,8 @@ class PropertiesController < ApplicationController
       render json: { error: "Loan not found" }, status: :not_found
     end
   end
+
+  def loans
+    @loans = GetbuiltProperty.all
+  end
 end
