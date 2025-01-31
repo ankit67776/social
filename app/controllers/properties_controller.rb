@@ -1,9 +1,8 @@
 class PropertiesController < ApplicationController
   def loan_overview
-    @property = GetbuiltProperty.find_by(id: params[:id])
-    if @property
-      @loan_data = @property.data
-    else
+    @loan = GetbuiltProperty.find_by(id: params[:id])
+
+    if @loan.nil?
       render json: { error: "Loan not found" }, status: :not_found
     end
   end

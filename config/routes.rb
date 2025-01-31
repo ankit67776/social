@@ -29,11 +29,11 @@ Rails.application.routes.draw do
   resources :customers, only: [ :index, :show ]
 
   # get "loan_portfolio", to: "loans#loan_portfolio"
+  #
 
   resources :loans, only: [ :index, :show ]
   get "/fetch_loans", to: "loans#fetch_and_store_loans_with_history"
 
   post "fetch_and_save", to: "api_responses#fetch_and_save"
-  get "loans/:id/loan_overview", to: "properties#loan_overview"
-  get "properties/:id/loan_analytics", to: "properties#loan_analytics"
+  get "loans/:id/loan_overview", to: "properties#loan_overview", as: :loan_overview
 end

@@ -23,10 +23,12 @@
         </td>
         <td class="px-4 py-2 border"><%= loan.data["branch"]["bank"]["name"] %></td>
         <td class="px-4 py-2 border"><%= loan.data["borrower"]["formattedAddress"] %></td>
-        <td class="px-4 py-2 border"><%= number_to_currency(loan.data["financials"]["amount"]) %></td>
+        <td class="px-4 py-2 border"><%= number_to_currency(loan.data["financials"]["loanAmount"]) %></td>
         <td class="px-4 py-2 border"><%= number_to_currency(loan.data["financials"]["availableToDraw"]) %></td>
         <td class="px-4 py-2 border"><%= number_to_currency(loan.data["financials"]["principalBalance"]) %></td>
-
+        <td class="px-4 py-2 border text-center">
+          <%= link_to "View Details", loan_overview_path(loan.id), class: "px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition" %>
+        </td>
       </tr>
     <% end %>
   </tbody>
